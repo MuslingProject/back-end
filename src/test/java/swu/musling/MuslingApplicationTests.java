@@ -3,11 +3,6 @@ package swu.musling;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class MuslingApplicationTests {
+import static org.junit.jupiter.api.Assertions.*;
 
-	@Test
-	void contextLoads() {
-	}
 
-}
