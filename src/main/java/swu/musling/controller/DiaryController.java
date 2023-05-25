@@ -17,9 +17,11 @@ public class DiaryController {
         this.diaryService = diaryService;
     }
 
+
     @PostMapping("/create/diary")
     //date 형식 지정해 주어야 함
-    void createDiary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, @RequestBody String text){
+    void createDiary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                     @RequestBody String text){
         diaryService.createDiary(date, text);
     }
 }
