@@ -92,7 +92,5 @@ public class WeatherService {
         resultMap.put("main", weatherData.get("main"));
         resultMap.put("icon", weatherData.get("icon"));
         return resultMap;
-
-
     }
 }
