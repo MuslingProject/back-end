@@ -1,11 +1,10 @@
-package swu.musling.controller;
+package swu.musling.diary;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import swu.musling.domain.Diary;
-import swu.musling.domain.DiaryVo;
-import swu.musling.service.DiaryService;
+import swu.musling.diary.DiaryVo;
+import swu.musling.diary.DiaryService;
 
 @RestController
 public class DiaryController {

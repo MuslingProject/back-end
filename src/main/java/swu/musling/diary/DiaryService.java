@@ -1,9 +1,9 @@
-package swu.musling.service;
+package swu.musling.diary;
 
 import org.springframework.stereotype.Service;
-import swu.musling.domain.Diary;
-import swu.musling.domain.DiaryVo;
-import swu.musling.repository.DiaryRepository;
+import swu.musling.diary.Diary;
+import swu.musling.diary.DiaryVo;
+import swu.musling.diary.DiaryRepository;
 
 @Service
 public class DiaryService {

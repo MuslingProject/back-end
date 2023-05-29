@@ -1,4 +1,4 @@
-package swu.musling.domain;
+package swu.musling.diary;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,4 +1,4 @@
-package swu.musling.service;
+package swu.musling.weather;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,9 +22,9 @@ public class WeatherService {
     private double latitude;    //위도
     private double longitude;   //경도
 
-    public Map<String, Object> getWeather(double lat, double lon) throws MalformedURLException {
-        this.latitude = lat;
-        this.longitude = lon;
+    public Map<String, Object> getWeather(WeatherVo weatherVo) throws MalformedURLException {
+        this.latitude = weatherVo.getLat();
+        this.longitude = weatherVo.getLon();
 
         //open weater map 에서 데이터 받아오기
         String weatherData = getWeatherString();
