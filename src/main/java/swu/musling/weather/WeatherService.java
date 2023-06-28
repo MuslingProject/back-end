@@ -82,9 +82,9 @@ public class WeatherService {
 
         Map<String, Object> resultMap = new HashMap<>();
 
-
         JSONObject mainData = (JSONObject) jsonObject.get("main");
-        resultMap.put("temp", mainData.get("temp"));
+        //Kelvin 온도 조정, 소수점 1째자리에서 반올림
+        resultMap.put("temp", Math.round((double) mainData.get("temp")-273.15));
         //500 error
         //JSON 형식 살펴보면 weather이 {} 아닌 [] 로 감싸져 있어서 JSONArray 사용해 주어야 함
         JSONArray weatherArray = (JSONArray) jsonObject.get("weather");

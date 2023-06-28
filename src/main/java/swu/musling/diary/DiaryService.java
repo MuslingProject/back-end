@@ -1,9 +1,6 @@
 package swu.musling.diary;
 
 import org.springframework.stereotype.Service;
-import swu.musling.diary.Diary;
-import swu.musling.diary.DiaryVo;
-import swu.musling.diary.DiaryRepository;
 
 @Service
 public class DiaryService {
@@ -24,6 +21,8 @@ public class DiaryService {
         nowDiary.setMood(diaryVo.getMood());
         nowDiary.setMusicTitle(diaryVo.getMusicTitle());
         nowDiary.setMusicSinger(diaryVo.getMusicSinger());
+        nowDiary.setMusicImg(diaryVo.getMusicImg());
+        nowDiary.setMood_result(diaryVo.getMood_result());
         diaryRepository.save(nowDiary);
     }
 }

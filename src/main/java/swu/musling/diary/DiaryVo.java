@@ -27,4 +27,5 @@ public class DiaryVo {
     private String musicTitle;
     private String musicSinger;
     private String musicImg;
+    private String mood_result;
 }

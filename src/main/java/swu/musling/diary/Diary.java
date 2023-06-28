@@ -29,4 +29,5 @@ public class Diary {
     private String musicTitle;
     private String musicSinger;
     private String musicImg;
+    private String mood_result; //모델을 돌리고 나온 분위기 결과값
 }

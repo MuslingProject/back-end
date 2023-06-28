@@ -1,4 +1,4 @@
-package swu.musling.securityspring.config;
+package swu.musling.config.securityspring.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

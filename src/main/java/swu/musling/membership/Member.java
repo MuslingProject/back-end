@@ -23,9 +23,10 @@ public class Member {
     @Column(length = 100)
     private String pwd; //비밀번호
     private String name;    //이름
-    private int age;    //연령대
+    private String age;    //연령대
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String imageUrl;    //프로필 경로
 
     @Builder
     public Member(String userid) {
