@@ -1,8 +1,10 @@
 package swu.musling.diary;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DiaryServiceImpl implements DiaryService{
@@ -32,6 +34,21 @@ public class DiaryServiceImpl implements DiaryService{
     @Override
     public void deleteDiary(DeleteRequestDto deleteRequestDto) {
         diaryRepository.deleteAllByUserIdAndDate(deleteRequestDto.getUserId(), deleteRequestDto.getDate());
+    }
+    @Override
+    public List<Diary> readDiary(DiaryReadRequestDto diaryReadRequestDto) {
+        return  diaryRepository.findAllByUserIdAndDate(diaryReadRequestDto.getUserId(), diaryReadRequestDto.getDate());
+    }
+
+    @Override
+    public List<Diary> readMonthlyDiary(DiaryMonthlyReadRequestDto diaryMonthlyReadRequestDto) {
+        int month;
+        month = diaryMonthlyReadRequestDto.getDate().getMonthValue();
+
+        LocalDate startDate = diaryMonthlyReadRequestDto.getDate().withDayOfMonth(1);
+        LocalDate endDate = diaryMonthlyReadRequestDto.getDate().withDayOfMonth(diaryMonthlyReadRequestDto.getDate().lengthOfMonth());
+
+       return diaryRepository.findAllByUserIdAndDateBetween(diaryMonthlyReadRequestDto.getUserId(),startDate, endDate);
     }
 
 }

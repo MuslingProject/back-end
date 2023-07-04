@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 public class DiaryController {
@@ -51,6 +52,15 @@ public class DiaryController {
         diaryServiceImpl.deleteDiary(deleteRequestDto);
     }
 
-    //일기 수정 api
+    //일기 개별 조회 api
+    @GetMapping("/read/diary")
+    List<Diary> readDiary(@RequestBody DiaryReadRequestDto diaryReadRequestDto){
+        return diaryServiceImpl.readDiary(diaryReadRequestDto);
+    }
 
+    //일기 월별 조회 api
+    @GetMapping("/read/diaries")
+    List<Diary> readMonthlyDiary(@RequestBody DiaryMonthlyReadRequestDto diaryMonthlyReadRequestDto){
+        return diaryServiceImpl.readMonthlyDiary(diaryMonthlyReadRequestDto);
+    }
 }
