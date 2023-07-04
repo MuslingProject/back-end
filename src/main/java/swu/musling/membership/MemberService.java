@@ -1,6 +1,7 @@
 package swu.musling.membership;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,9 +14,12 @@ import java.util.UUID;
 public class MemberService {
     private final MemberRepository memberRepository;
     @Autowired
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
     private S3Uploader s3Uploader;
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -36,7 +40,7 @@ public class MemberService {
         } else {    //자체 회원가입의 경우
             return memberRepository.save(Member.builder()
                     .userid(member.getUserid())
-                    .pwd(member.getPwd())
+                    .pwd(passwordEncoder.encode(member.getPwd()))
                     .name(member.getName())
                     .age(member.getAge())
                     .role(Role.ROLE_MEMBER)

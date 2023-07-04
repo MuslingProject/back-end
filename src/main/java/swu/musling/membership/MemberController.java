@@ -32,7 +32,7 @@ public class MemberController {
     @PostMapping("/login")
     public String login(@RequestBody Map<String, String> user) {
 
-        Member member = memberRepository.findByUserid(user.get("user_id"))
+        Member member = memberRepository.findByUserid(user.get("userid"))
                 .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 아이디입니다."));
 
         if (!passwordEncoder.matches(user.get("pwd"), member.getPwd())) {

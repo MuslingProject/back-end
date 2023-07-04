@@ -1,28 +1,20 @@
 package swu.musling.diary;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDate;
 
 @RestController
 public class DiaryController {
-    private final DiaryService diaryService;
+    private final DiaryServiceImpl diaryServiceImpl;
     MoodRequestDto moodRequestDto;
     private final MoodService moodService;
 
-    public DiaryController(DiaryService diaryService, MoodService moodService) {
-        this.diaryService = diaryService;
+    public DiaryController(DiaryServiceImpl diaryServiceImpl, MoodService moodService) {
+        this.diaryServiceImpl = diaryServiceImpl;
         this.moodService = moodService;
-    }
-
-    //일기 저장 api
-    @PostMapping("/create/diary")
-    void createDiary(@RequestBody DiaryVo diaryVo) {    //JSON 형식으로 요청
-
-        diaryService.createDiary(diaryVo);
-        moodRequestDto.setContent(diaryVo.getContent());
     }
 
     //Flask 서버로 일기 내용을 전달하는 api
@@ -44,4 +36,21 @@ public class DiaryController {
                     return responseDto;
                 });
     }
+
+    //일기 저장 api
+    @PostMapping("/create/diary")
+    void createDiary(@RequestBody DiaryVo diaryVo) {    //JSON 형식으로 요청
+
+        diaryServiceImpl.createDiary(diaryVo);
+        //moodRequestDto.setContent(diaryVo.getContent());
+    }
+
+    //일기 삭제 api
+    @DeleteMapping("/delete/diary")
+    void updateDiary(@RequestBody DeleteRequestDto deleteRequestDto) {
+        diaryServiceImpl.deleteDiary(deleteRequestDto);
+    }
+
+    //일기 수정 api
+
 }
