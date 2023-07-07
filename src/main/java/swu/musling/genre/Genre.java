@@ -4,6 +4,7 @@ import lombok.*;
 import swu.musling.membership.Member;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity(name = "genre")
 @Getter
@@ -12,25 +13,23 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Genre {
     @Id
-    @GeneratedValue
-    private Long genreid;
-    @ManyToOne(cascade = CascadeType.MERGE, targetEntity = Member.class)
-    @JoinColumn(name = "userid", insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int genreid;
+    @ManyToOne
+    @JoinColumn(name = "id")
     private Member member;
-    @Column(name = "userid")
-    private String memberId;
-    private boolean indie;
-    private boolean balad;
-    private boolean rock_metal;
-    private boolean dance_pop;
-    private boolean rap_hiphop;
-    private boolean rb_soul;
-    private boolean fork_acoustic;
+    private int indie;
+    private int balad;
+    private int rock_metal;
+    private int dance_pop;
+    private int rap_hiphop;
+    private int rb_soul;
+    private int fork_acoustic;
 
     @Builder
-    public Genre(String memberId, boolean indie, boolean balad, boolean rockMetal,
-                 boolean dancePop, boolean rapHiphop, boolean rbSoul, boolean forkAcoustic) {
-        this.memberId = memberId;
+    public Genre(Member member, int indie, int balad, int rockMetal,
+                 int dancePop, int rapHiphop, int rbSoul, int forkAcoustic) {
+        this.member = member;
         this.indie = indie;
         this.balad = balad;
         this.rock_metal = rockMetal;

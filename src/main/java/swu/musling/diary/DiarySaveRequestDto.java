@@ -13,17 +13,13 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiaryVo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class DiarySaveRequestDto {
     private String userId;
     private String title;
     private String content;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
     private String weather;
-    private String mood;
     private String musicTitle;
     private String musicSinger;
     private String musicImg;

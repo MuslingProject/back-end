@@ -3,43 +3,34 @@ package swu.musling.genre;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import swu.musling.membership.Member;
 
+import java.util.Optional;
+
 @Getter
+@Setter
 @NoArgsConstructor
 public class GenreCreateRequestDto {
-    private String memberId;
-    private boolean indie;
-    private boolean balad;
-    private boolean rock_metal;
-    private boolean dance_pop;
-    private boolean rap_hiphop;
-    private boolean rb_soul;
-    private boolean fork_acoustic;
+    private String userId;
+    private int indie;
+    private int balad;
+    private int rockMetal;
+    private int dancePop;
+    private int rapHiphop;
+    private int rbSoul;
+    private int forkAcoustic;
 
     @Builder
-    public GenreCreateRequestDto(String memberId, boolean indie, boolean balad, boolean rockMetal,
-                                 boolean dancePop, boolean rapHiphop, boolean rbSoul, boolean forkAcoustic) {
-        this.memberId = memberId;
+    public GenreCreateRequestDto(String userId, int indie, int balad, int rockMetal,
+                                 int dancePop, int rapHiphop, int rbSoul, int forkAcoustic) {
+        this.userId = userId;
         this.indie = indie;
         this.balad = balad;
-        this.rock_metal = rockMetal;
-        this.dance_pop = dancePop;
-        this.rap_hiphop = rapHiphop;
-        this.rb_soul = rbSoul;
-        this.fork_acoustic = forkAcoustic;
-    }
-
-    public Genre toEntity() {
-        return Genre.builder()
-                .memberId(memberId)
-                .indie(indie)
-                .balad(balad)
-                .rockMetal(rock_metal)
-                .dancePop(dance_pop)
-                .rapHiphop(rap_hiphop)
-                .rbSoul(rb_soul)
-                .forkAcoustic(fork_acoustic)
-                .build();
+        this.rockMetal = rockMetal;
+        this.dancePop = dancePop;
+        this.rapHiphop = rapHiphop;
+        this.rbSoul = rbSoul;
+        this.forkAcoustic = forkAcoustic;
     }
 }

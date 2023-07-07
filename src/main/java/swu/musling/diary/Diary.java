@@ -2,11 +2,9 @@ package swu.musling.diary;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import swu.musling.membership.Member;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
@@ -14,18 +12,19 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "diary")
 public class Diary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String userId;
+    private int diaryid;
+    @ManyToOne
+    @JoinColumn(name = "id")
+    private Member member;
     private String title;
     private String content;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
     private String weather;
-    private String mood;
     private String musicTitle;
     private String musicSinger;
     private String musicImg;
