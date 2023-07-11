@@ -1,9 +1,12 @@
 package swu.musling.membership;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import swu.musling.ResponseDto;
 import swu.musling.config.securityspring.config.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,29 +18,42 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class MemberController {
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
 
     //회원가입
     @ResponseBody
     @PostMapping("/new-user")
-    public UUID register(HttpServletRequest request, @RequestParam(value="image") MultipartFile image, Member member) throws IOException {
-        UUID userId = memberService.signUp(image, member);
-        return userId;
+    public ResponseEntity register(@RequestBody Map<String, String> user) throws Exception {
+        try {
+            ResponseDto responseDto = memberService.signUp(user);
+            return ResponseEntity.ok().body(ResponseDto.response(200, responseDto.getMessage(), responseDto.getData()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseDto.response(400, e.getMessage()));
+        }
+    }
+
+    //프로필 저장
+    @ResponseBody
+    @PostMapping("/new-user/profile")
+    public ResponseEntity registerImg(HttpServletRequest request,
+                                      @RequestParam(value="image") MultipartFile image) throws Exception {
+        try {
+            ResponseDto responseDto = memberService.signUpImg(image);
+            return ResponseEntity.ok().body(ResponseDto.response(200, responseDto.getMessage(), responseDto.getData()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseDto.response(400, e.getMessage()));
+        }
     }
 
     // 로그인
     @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> user) {
+    public ResponseEntity login(@RequestBody Map<String, String> user) throws Exception{
 
-        Member member = memberRepository.findByUserid(user.get("userid"))
-                .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 아이디입니다."));
-
-        if (!passwordEncoder.matches(user.get("pwd"), member.getPwd())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 맞지 않습니다.");
+        try {
+            ResponseDto responseDto = memberService.singIn(user);
+            return ResponseEntity.ok().body(ResponseDto.response(200, responseDto.getMessage(), responseDto.getData()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseDto.response(400, e.getMessage()));
         }
-        return jwtTokenProvider.createToken(member.getUserid(), member.getRole());
     }
 }

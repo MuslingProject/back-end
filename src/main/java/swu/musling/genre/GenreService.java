@@ -19,10 +19,10 @@ public class GenreService {
     @Transactional
     public void create(GenreCreateRequestDto requestDto) {
         Genre genre = new Genre();
-        UUID id = memberRepository.findByUserid(requestDto.getUserId()).get().getId();
-        Member member = memberRepository.findById(id);
+        UUID id = memberRepository.findByUserId(requestDto.getUserId()).get().getId();
+        //Member member = memberRepository.findById(id);
 
-        genre.setMember(member);
+        //genre.setMember(member);
         genre.setIndie(requestDto.getIndie());
         genre.setBalad(requestDto.getBalad());
         genre.setRock_metal(requestDto.getRockMetal());

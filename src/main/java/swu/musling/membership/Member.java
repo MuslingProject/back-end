@@ -12,31 +12,33 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Member {
+public class Member extends BaseTimeEntity {
     //id 컬럼을 member 테이블의 기본키로 설정
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "member_id", columnDefinition = "BINARY(16)")
     private UUID id;    //자동 생성 id
-    private String userid;   //사용자 지정 id
-
-    @Column(length = 100)
+    @Column(length = 100, unique = true, nullable = false)
+    private String userId;   //사용자 지정 id
+    @Column(length = 100, unique = true)
     private String pwd; //비밀번호
+
     private String name;    //이름
     private String age;    //연령대
     @Enumerated(EnumType.STRING)
     private Role role;
-    private String imageUrl;    //프로필 경로
+
+    @OneToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
     @OneToMany(mappedBy = "member")
     private List<Genre> genres = new ArrayList<>();
     @OneToMany(mappedBy = "member")
     private List<Diary> diaries = new ArrayList<>();
 
-    @Builder
-    public Member(String userid) {
-        this.userid = userid;
-    }
 }

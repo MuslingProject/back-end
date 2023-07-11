@@ -18,6 +18,5 @@ public class DiaryController {
     void createDiary(@RequestBody DiarySaveRequestDto diarySaveRequestDto) {    //JSON 형식으로 요청
 
         diaryServiceImpl.createDiary(diarySaveRequestDto);
-        //moodRequestDto.setContent(diarySaveRequestDto.getContent());
     }
 }
