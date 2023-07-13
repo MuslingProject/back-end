@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeatherVo {
+public class WeatherRequestDto {
     private double lat; //위도
     private double lon; //경도
 }

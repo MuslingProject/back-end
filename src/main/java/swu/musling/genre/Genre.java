@@ -23,9 +23,9 @@ public class Genre {
     private Member member;
     private int indie;
     private int balad;
-    private int rock_metal;
-    private int dance_pop;
-    private int rap_hiphop;
-    private int rb_soul;
-    private int fork_acoustic;
+    private int rockMetal;
+    private int dancePop;
+    private int rapHiphop;
+    private int rbSoul;
+    private int forkAcoustic;
 }

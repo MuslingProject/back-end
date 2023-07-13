@@ -3,6 +3,7 @@ package swu.musling.genre;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import swu.musling.ResponseDto;
 import swu.musling.diary.Diary;
 import swu.musling.membership.Member;
 import swu.musling.membership.MemberRepository;
@@ -17,20 +18,12 @@ public class GenreService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void create(GenreCreateRequestDto requestDto) {
-        Genre genre = new Genre();
-        UUID id = memberRepository.findByUserId(requestDto.getUserId()).get().getId();
-        //Member member = memberRepository.findById(id);
-
-        //genre.setMember(member);
-        genre.setIndie(requestDto.getIndie());
-        genre.setBalad(requestDto.getBalad());
-        genre.setRock_metal(requestDto.getRockMetal());
-        genre.setDance_pop(requestDto.getDancePop());
-        genre.setRap_hiphop(requestDto.getRapHiphop());
-        genre.setRb_soul(requestDto.getRbSoul());
-        genre.setFork_acoustic(requestDto.getForkAcoustic());
-
-        genreRepository.save(genre);
+    public ResponseDto create(GenreCreateRequestDto requestDto) throws Exception{
+        try {
+            genreRepository.save(requestDto.toEntity());
+            return new ResponseDto(200, "장르저장 성공");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }

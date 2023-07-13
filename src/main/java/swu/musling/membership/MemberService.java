@@ -104,4 +104,19 @@ public class MemberService {
             throw new Exception(e.getMessage());
         }
     }
+
+    @Transactional
+    public ResponseDto out(Map<String, String> user) throws Exception {
+        try {
+            Member member = memberRepository.findByUserId(user.get("userId"))
+                    .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 아이디입니다."));
+
+            memberRepository.delete(member);
+            profileRepository.deleteById(member.getProfile().getProfileId());
+            return new ResponseDto(200, "회원탈퇴 성공");
+
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 }

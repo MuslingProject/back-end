@@ -24,11 +24,9 @@ public class DiaryServiceImpl implements DiaryService{
     public void createDiary(DiarySaveRequestDto diarySaveRequestDto) {
         //일기 값 db에 넣기
         //사용자가 저장을 누른다
-        //db에 1차 저장한다. (member, title, content, date, weather)
         //인공지능 서버로 content를 보내고 모델 결과값을 받는다.
-        //db에 2차 저장한다. (mood_result)
         //모델 결과값과 날씨에 따른 노래 랜덤 5개를 db에서 조회하고 보여준다. (메서드 호출 형식)
-        //db에 3차 저장한다. (list 형식으로)
+        //db에 저장한다. (list 형식으로)
 
         /*
         //Send user's content to Flask Server

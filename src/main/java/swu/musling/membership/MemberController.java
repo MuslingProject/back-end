@@ -47,11 +47,21 @@ public class MemberController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody Map<String, String> user) throws Exception{
-
+    public ResponseEntity login(@RequestBody Map<String, String> user) throws Exception {
         try {
             ResponseDto responseDto = memberService.singIn(user);
             return ResponseEntity.ok().body(ResponseDto.response(200, responseDto.getMessage(), responseDto.getData()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseDto.response(400, e.getMessage()));
+        }
+    }
+
+    //회원 탈퇴
+    @DeleteMapping("/unregister")
+    public ResponseEntity out(@RequestBody Map<String, String> user) throws Exception {
+        try {
+            ResponseDto responseDto = memberService.out(user);
+            return ResponseEntity.ok().body(ResponseDto.response(200, responseDto.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ResponseDto.response(400, e.getMessage()));
         }

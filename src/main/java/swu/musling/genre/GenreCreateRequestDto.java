@@ -1,18 +1,16 @@
 package swu.musling.genre;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import swu.musling.membership.Member;
 
 import java.util.Optional;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString
 public class GenreCreateRequestDto {
-    private String userId;
+    private Member member;
     private int indie;
     private int balad;
     private int rockMetal;
@@ -22,9 +20,9 @@ public class GenreCreateRequestDto {
     private int forkAcoustic;
 
     @Builder
-    public GenreCreateRequestDto(String userId, int indie, int balad, int rockMetal,
+    public GenreCreateRequestDto(Member member, int indie, int balad, int rockMetal,
                                  int dancePop, int rapHiphop, int rbSoul, int forkAcoustic) {
-        this.userId = userId;
+        this.member = member;
         this.indie = indie;
         this.balad = balad;
         this.rockMetal = rockMetal;
@@ -32,5 +30,18 @@ public class GenreCreateRequestDto {
         this.rapHiphop = rapHiphop;
         this.rbSoul = rbSoul;
         this.forkAcoustic = forkAcoustic;
+    }
+
+    public Genre toEntity() {
+        return Genre.builder()
+                .member(member)
+                .indie(indie)
+                .balad(balad)
+                .rockMetal(rockMetal)
+                .dancePop(dancePop)
+                .rapHiphop(rapHiphop)
+                .rbSoul(rbSoul)
+                .forkAcoustic(forkAcoustic)
+                .build();
     }
 }
