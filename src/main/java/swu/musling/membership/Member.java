@@ -41,4 +41,10 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Diary> diaries = new ArrayList<>();
 
+    public Member update(String name) {
+        this.name = name;
+
+        return this;
+    }
+
 }

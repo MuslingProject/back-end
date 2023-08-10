@@ -18,4 +18,10 @@ public class Profile {
     @Column(name = "profile_id")
     private Integer profileId;    //자동 생성 id
     private String imageUrl;
+
+    public Profile update(String imageUrl) {
+        this.imageUrl = imageUrl;
+
+        return this;
+    }
 }

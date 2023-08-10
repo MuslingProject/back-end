@@ -1,6 +1,7 @@
 package swu.musling.config.s3.config;
 
 import ch.qos.logback.classic.Logger;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -68,4 +69,11 @@ public class S3Uploader {
         }
         return Optional.empty();
     }
+
+    public void delete(String fileName) {
+        String splitStr = ".com/";
+        fileName = fileName.substring(fileName.lastIndexOf(splitStr) + splitStr.length());
+        amazonS3Client.deleteObject(bucket, (fileName).replace(File.separatorChar, '/'));
+    }
+
 }
