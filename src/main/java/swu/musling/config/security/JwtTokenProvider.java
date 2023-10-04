@@ -1,4 +1,4 @@
-package swu.musling.config.securityspring.config;
+package swu.musling.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -8,16 +8,19 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import swu.musling.membership.Role;
+import swu.musling.member.Role;
 
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -36,9 +39,12 @@ public class JwtTokenProvider {
 
     // JWT 토큰 생성
     public String createToken(String userPK, Role role) {
+        List<GrantedAuthority> roles = new ArrayList<>();
         Claims claims = Jwts.claims().setSubject(userPK); // JWT payload에 저장되는 정보 단위
-        claims.put("roles", role); // 정보 저장 (key-value)
+        claims.put("roles", role);
+//        claims.put("roles", roles); // 정보 저장 (key-value)
         Date now = new Date();
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)

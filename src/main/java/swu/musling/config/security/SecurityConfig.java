@@ -1,4 +1,4 @@
-package swu.musling.config.securityspring.config;
+package swu.musling.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

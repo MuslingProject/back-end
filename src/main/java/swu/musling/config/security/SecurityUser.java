@@ -1,11 +1,8 @@
-package swu.musling.config.securityspring.config;
+package swu.musling.config.security;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
-import swu.musling.membership.Member;
-
-import java.util.Collection;
+import swu.musling.member.jpa.Member;
 
 /**
  * 사용자가 시스템의 리소스에 접근하기 위해서는 먼저 인증 관리 필터의 검증을 통과해야함

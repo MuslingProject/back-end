@@ -1,16 +1,12 @@
-package swu.musling.membership;
+package swu.musling.member.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, String> {
-    Optional<Member> findByUserId(String userId);
-    Member findById(UUID id);
-
-
+    Optional<Member> findById(String id);
 }

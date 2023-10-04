@@ -1,4 +1,4 @@
-package swu.musling.membership;
+package swu.musling;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

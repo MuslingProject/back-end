@@ -1,4 +1,4 @@
-package swu.musling.membership;
+package swu.musling.member.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
