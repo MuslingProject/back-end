@@ -9,7 +9,7 @@ import swu.musling.config.s3.config.S3Uploader;
 import swu.musling.config.security.JwtTokenProvider;
 import swu.musling.member.Role;
 import swu.musling.member.dto.LoginRequestDto;
-import swu.musling.member.dto.MembersRequestDto;
+import swu.musling.member.dto.MemberRequestDto;
 import swu.musling.member.jpa.Member;
 import swu.musling.member.jpa.MemberRepository;
 import swu.musling.member.jpa.Profile;
@@ -39,13 +39,13 @@ public class MemberServiceImpl implements MemberService{
 
     @Transactional
     @Override
-    public UUID createMember(MembersRequestDto membersRequestDto, MultipartFile file) { //회원가입
+    public UUID createMember(MemberRequestDto memberRequestDto, MultipartFile file) { //회원가입
 
         Member member = Member.builder()
-                .id(membersRequestDto.getId())
-                .pwd(passwordEncoder.encode(membersRequestDto.getPwd()))
-                .name(membersRequestDto.getName())
-                .age(membersRequestDto.getAge())
+                .email(memberRequestDto.getEmail())
+                .pwd(passwordEncoder.encode(memberRequestDto.getPwd()))
+                .name(memberRequestDto.getName())
+                .age(memberRequestDto.getAge())
                 .role(Role.ROLE_MEMBER)
                 .build();
 
@@ -74,14 +74,25 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional(readOnly = true)
     public String login(LoginRequestDto loginRequestDto) {  //로그인
-        Member member = memberRepository.findById(loginRequestDto.getId())
+        Member member = memberRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 아이디입니다."));
 
         if (!passwordEncoder.matches(loginRequestDto.getPwd(), member.getPwd())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 맞지 않습니다.");
         }
 
-        String token = jwtTokenProvider.createToken(member.getId(), member.getRole());
+        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
         return token;
+    }
+
+    @Override
+    @Transactional
+    public String out(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
+
+       memberRepository.delete(member);
+
+        return member.getEmail();
     }
 }
