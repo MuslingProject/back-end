@@ -2,15 +2,19 @@ package swu.musling.member.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import swu.musling.ApiResponse;
+import swu.musling.config.security.SecurityUser;
 import swu.musling.member.dto.LoginRequestDto;
 import swu.musling.member.dto.MemberRequestDto;
+import swu.musling.member.dto.UpdateNameRequestDto;
+import swu.musling.member.dto.UpdateNameResponseDto;
+import swu.musling.member.jpa.Member;
 import swu.musling.member.service.MemberService;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -31,8 +35,7 @@ public class MemberController {
         try {
             return ApiResponse.createSuccess( memberService.createMember(memberRequestDto, file));
         } catch (IOException e) {
-            return ApiResponse.createError(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "사진 업로드 실패");
+            return ApiResponse.createError(HttpStatus.INTERNAL_SERVER_ERROR, "사진 업로드 실패");
         }
     }
 
@@ -46,6 +49,25 @@ public class MemberController {
     @DeleteMapping("/{email}")
     public ApiResponse<String> out(@PathVariable String email) {
         return ApiResponse.createSuccess(memberService.out(email));
+    }
+
+    //프로필 사진 수정
+    @PatchMapping("/profile")
+    public ApiResponse<?> updateProfile(@AuthenticationPrincipal SecurityUser principal,
+                                        @RequestParam("file") MultipartFile file) {
+        try {
+            memberService.updateProfile(principal.getMember(), file);
+            return ApiResponse.createSuccessWithNoData("프로필 사진 수정 성공");
+        }  catch (RuntimeException e) {
+            return ApiResponse.createError(HttpStatus.INTERNAL_SERVER_ERROR, "사진 업로드 실패");
+        }
+    }
+
+    //이름 수정
+    @PatchMapping("/name")
+    public ApiResponse<UpdateNameResponseDto> updateName(@AuthenticationPrincipal SecurityUser principal,
+                                                         @RequestBody UpdateNameRequestDto requestDto) {
+        return ApiResponse.createSuccess(memberService.updateName(principal.getMember(), requestDto));
     }
 
 }

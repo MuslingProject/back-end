@@ -45,4 +45,9 @@ public class Member extends BaseTimeEntity {
         this.age = age;
         this.role = role;
     }
+
+    public void updateName(String name) {   //별명 업데이트 시 사용
+        this.name = name;
+    }
+
 }

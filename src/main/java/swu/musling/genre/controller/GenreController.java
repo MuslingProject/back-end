@@ -29,7 +29,7 @@ public class GenreController {
         return ApiResponse.createSuccess(genreService.saveGenre(principal.getMember(), genreRequestDto));
     }
 
-    @PutMapping
+    @PatchMapping
     public ApiResponse<GenreResponseDto> updateGenre(@AuthenticationPrincipal SecurityUser principal,
                                                      @RequestBody GenreRequestDto genreRequestDto) {    //장르 수정
         return ApiResponse.createSuccess(genreService.updateGenre(principal.getMember(), genreRequestDto));

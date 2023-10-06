@@ -64,7 +64,7 @@ public class GenreServiceImpl implements GenreService{
 
     @Override
     @Transactional
-    public GenreResponseDto updateGenre(Member member, GenreRequestDto genreRequestDto) {
+    public GenreResponseDto updateGenre(Member member, GenreRequestDto genreRequestDto) {   //장르 수정
         Genre genre = genreRepository.findByMember(member)
                 .orElseThrow(() -> new IllegalArgumentException("선호 장르 정보가 없습니다."));
 

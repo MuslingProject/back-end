@@ -10,6 +10,8 @@ import swu.musling.config.security.JwtTokenProvider;
 import swu.musling.member.Role;
 import swu.musling.member.dto.LoginRequestDto;
 import swu.musling.member.dto.MemberRequestDto;
+import swu.musling.member.dto.UpdateNameRequestDto;
+import swu.musling.member.dto.UpdateNameResponseDto;
 import swu.musling.member.jpa.Member;
 import swu.musling.member.jpa.MemberRepository;
 import swu.musling.member.jpa.Profile;
@@ -72,7 +74,6 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    @Transactional(readOnly = true)
     public String login(LoginRequestDto loginRequestDto) {  //로그인
         Member member = memberRepository.findByEmail(loginRequestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입 되지 않은 아이디입니다."));
@@ -87,12 +88,49 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     @Transactional
-    public String out(String email) {
+    public String out(String email) {   //회원 탈퇴
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
 
        memberRepository.delete(member);
 
         return member.getEmail();
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(Member member, MultipartFile file) {    //프로필 사진 수정
+        if(!file.isEmpty()) {
+            try {
+                Member m = memberRepository.findByEmail(member.getEmail())
+                        .orElseThrow(() -> new IllegalArgumentException(member.getEmail() + " 를 찾을 수 없습니다."));
+
+                //기존 파일 s3 경로
+                String originalFileName = m.getProfile().getImageUrl();
+                //기존 파일 s3에서 삭제
+                s3Uploader.delete(originalFileName);
+                //db의 s3 경로 바꿔주고 s3에 재업로드
+                String storedFileName = s3Uploader.upload(file,"images");
+                //db 수정
+                m.getProfile().update(storedFileName);
+                profileRepository.save(m.getProfile());
+
+            } catch (IOException e) {
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public UpdateNameResponseDto updateName(Member member, UpdateNameRequestDto requestDto) {  //별명 수정
+        String oldName = member.getName();
+        member.updateName(requestDto.getName());
+        memberRepository.save(member);
+
+        return UpdateNameResponseDto.builder()
+                .oldName(oldName)
+                .newName(requestDto.getName())
+                .build();
     }
 }

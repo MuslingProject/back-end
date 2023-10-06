@@ -1,6 +1,7 @@
 package swu.musling.member.jpa;
 
 import lombok.*;
+import swu.musling.genre.dto.GenreRequestDto;
 
 import javax.persistence.*;
 
@@ -22,6 +23,10 @@ public class Profile {
     @Builder
     public Profile(Member member, String imageUrl) {
         this.member = member;
+        this.imageUrl = imageUrl;
+    }
+
+    public void update(String imageUrl) {   //프로필 사진 업데이트 시 사용
         this.imageUrl = imageUrl;
     }
 }
