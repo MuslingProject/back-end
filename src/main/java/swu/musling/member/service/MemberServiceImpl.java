@@ -7,11 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import swu.musling.config.s3.config.S3Uploader;
 import swu.musling.config.security.JwtTokenProvider;
+import swu.musling.genre.dto.GenreResponseDto;
+import swu.musling.genre.jpa.Genre;
 import swu.musling.member.Role;
-import swu.musling.member.dto.LoginRequestDto;
-import swu.musling.member.dto.MemberRequestDto;
-import swu.musling.member.dto.UpdateNameRequestDto;
-import swu.musling.member.dto.UpdateNameResponseDto;
+import swu.musling.member.dto.*;
 import swu.musling.member.jpa.Member;
 import swu.musling.member.jpa.MemberRepository;
 import swu.musling.member.jpa.Profile;
@@ -48,6 +47,7 @@ public class MemberServiceImpl implements MemberService{
                 .pwd(passwordEncoder.encode(memberRequestDto.getPwd()))
                 .name(memberRequestDto.getName())
                 .age(memberRequestDto.getAge())
+                .ageRecommendation(memberRequestDto.isAgeRecommendation())
                 .role(Role.ROLE_MEMBER)
                 .build();
 
@@ -132,5 +132,23 @@ public class MemberServiceImpl implements MemberService{
                 .oldName(oldName)
                 .newName(requestDto.getName())
                 .build();
+    }
+
+    @Override
+    public UpdateAgeRecommendationResponseDto updateAgeRecommendation(Member member,
+                                                                      UpdateAgeRecommendationRequestDto requestDto) {
+        Boolean oldAgeRecommendation = member.isAgeRecommendation();
+        member.updateAgeRecommendation(requestDto.isAgeRecommendation());
+        memberRepository.save(member);
+
+        return UpdateAgeRecommendationResponseDto.builder()
+                .oldAgeRecommendation(oldAgeRecommendation)
+                .newAgeRecommendation(requestDto.isAgeRecommendation())
+                .build();
+    }
+
+    @Override
+    public MemberResponseDto getMemberInfo(Member member) { //정보 조회
+        return MemberResponseDto.of(member);
     }
 }

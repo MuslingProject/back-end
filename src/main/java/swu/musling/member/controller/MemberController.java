@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import swu.musling.ApiResponse;
 import swu.musling.config.security.SecurityUser;
-import swu.musling.member.dto.LoginRequestDto;
-import swu.musling.member.dto.MemberRequestDto;
-import swu.musling.member.dto.UpdateNameRequestDto;
-import swu.musling.member.dto.UpdateNameResponseDto;
+import swu.musling.member.dto.*;
 import swu.musling.member.jpa.Member;
 import swu.musling.member.service.MemberService;
 
@@ -51,6 +48,12 @@ public class MemberController {
         return ApiResponse.createSuccess(memberService.out(email));
     }
 
+    //회원 조회
+    @GetMapping
+    public ApiResponse<MemberResponseDto> getMyInfo(@AuthenticationPrincipal SecurityUser principal) {
+        return ApiResponse.createSuccess(memberService.getMemberInfo(principal.getMember()));
+    }
+
     //프로필 사진 수정
     @PatchMapping("/profile")
     public ApiResponse<?> updateProfile(@AuthenticationPrincipal SecurityUser principal,
@@ -70,4 +73,10 @@ public class MemberController {
         return ApiResponse.createSuccess(memberService.updateName(principal.getMember(), requestDto));
     }
 
+    //연령대 추천 on/off 수정
+    @PatchMapping("/ageRecommendation")
+    public ApiResponse<UpdateAgeRecommendationResponseDto> updateName(@AuthenticationPrincipal SecurityUser principal,
+                                                         @RequestBody UpdateAgeRecommendationRequestDto requestDto) {
+        return ApiResponse.createSuccess(memberService.updateAgeRecommendation(principal.getMember(), requestDto));
+    }
 }

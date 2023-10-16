@@ -11,5 +11,6 @@ public class MemberRequestDto {
     private String pwd;
     private String name;
     private String age;
+    private boolean ageRecommendation;
     private MultipartFile file;
 }
