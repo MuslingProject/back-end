@@ -2,5 +2,5 @@ package swu.musling.music.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MusicRepository extends JpaRepository<Music, Integer> {
+public interface CategoryRepository extends JpaRepository<Category, Integer> {
 }

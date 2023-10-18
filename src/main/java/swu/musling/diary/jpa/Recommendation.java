@@ -3,7 +3,6 @@ package swu.musling.diary.jpa;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import swu.musling.music.jpa.Music;
 
 import javax.persistence.*;
 

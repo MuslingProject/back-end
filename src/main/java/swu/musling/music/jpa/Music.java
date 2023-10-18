@@ -3,49 +3,33 @@ package swu.musling.music.jpa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swu.musling.diary.jpa.Diary;
-import swu.musling.diary.jpa.Recommendation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "music")
 public class Music {
-
     @Id
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "titles")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "music_id")
+    private Integer musicId;
+    @Column(name = "titles", nullable = false)
     private String titles;
-
-    @Column(name = "imgs")
+    @Column(name = "imgs", nullable = false)
     private String imgs;
-
-    @Column(name = "singers")
+    @Column(name = "singers", nullable = false)
     private String singers;
-
-    @Column(name = "lyrics")
+    @Column(name = "lyrics", nullable = false)
     private String lyrics;
-
-    @Column(name = "genres")
+    @Column(name = "genres", nullable = false)
     private String genres;
+    @Column(name = "years", nullable = false)
+    private int years;
 
-    @Column(name = "years")
-    private long years;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    public Recommendation toRecommendation(Diary diary) {
-        return Recommendation.builder()
-                .songTitle(this.titles)
-                .coverImagePath(this.imgs)
-                .singer(this.singers)
-                .emotion(diary.getMood())
-                .diary(diary)
-                .build();
-    }
 }
-
