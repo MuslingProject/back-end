@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class DiaryResponseDto {
+public class CreateDiaryResponseDto {
     private String title;
     private LocalDate date;
     private String weather;

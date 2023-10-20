@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import swu.musling.ApiResponse;
 import swu.musling.config.security.SecurityUser;
 import swu.musling.diary.dto.CreateDiaryRequestDto;
-import swu.musling.diary.dto.DiaryResponseDto;
-import swu.musling.diary.jpa.Diary;
+import swu.musling.diary.dto.CreateDiaryResponseDto;
 import swu.musling.diary.service.DiaryService;
 
 @RestController
@@ -22,8 +21,8 @@ public class DiaryController {
     }
 
     @PostMapping("/diaries")
-    public ApiResponse<DiaryResponseDto> createDiary(@AuthenticationPrincipal SecurityUser principal,
-                                                     @RequestBody CreateDiaryRequestDto requestDto) {  //일기 등록
+    public ApiResponse<CreateDiaryResponseDto> createDiary(@AuthenticationPrincipal SecurityUser principal,
+                                                           @RequestBody CreateDiaryRequestDto requestDto) {  //일기 등록
         return ApiResponse.createSuccess(diaryService.createDiary(principal.getMember(), requestDto));
     }
 }
