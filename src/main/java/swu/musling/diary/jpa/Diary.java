@@ -45,12 +45,29 @@ public class Diary {
     private List<Recommendation> recommendations = new ArrayList<>();
 
     @Builder
-    public Diary(String title, LocalDate date, String weather, String content, String mood, Member member) {
+    public Diary(String title, LocalDate date, String weather, String content, String mood,
+                 Member member) {
         this.title = title;
         this.date = date;
         this.weather = weather;
         this.content = content;
         this.mood = mood;
         this.member = member;
+        // @Builder.Default를 사용하여 기본값을 설정합니다.
+        this.recommendations = new ArrayList<>();
+    }
+
+    // Diary 엔티티 내에 추천을 추가하는 메서드
+    public void addRecommendation(String songTitle, String coverImagePath, String singer, String emotion, String weather) {
+        Recommendation recommendation = Recommendation.builder()
+                .songTitle(songTitle)
+                .coverImagePath(coverImagePath)
+                .singer(singer)
+                .emotion(emotion)
+                .weather(weather)
+                .diary(this) // 이렇게 해서 `Recommendation`에 `Diary`를 설정합니다.
+                .build();
+
+        this.recommendations.add(recommendation);
     }
 }
