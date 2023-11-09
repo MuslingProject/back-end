@@ -21,6 +21,7 @@ import swu.musling.music.jpa.CategoryRepository;
 import swu.musling.music.jpa.Music;
 import swu.musling.music.jpa.MusicRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +60,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public CreateDiaryResponseDto createDiary(Member member, CreateDiaryRequestDto requestDto) {
+    public CreateDiaryResponseDto createDiary(Member member, CreateDiaryRequestDto requestDto) {    //일기 등록
 
         // 1. 인공지능 API 호출
         EmotionResponseDto emotion = getEmotionFromAI(requestDto);
@@ -101,6 +102,14 @@ public class DiaryServiceImpl implements DiaryService {
         // 추가적인 저장 로직은 필요하지 않습니다.
 
         return CreateDiaryResponseDto.fromEntity(diary);
+    }
+
+    @Override
+    @Transactional
+    public void deleteDiary(Long diaryId) { //일기 삭제
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new EntityNotFoundException("Diary with id " + diaryId + " not found"));
+        diaryRepository.delete(diary);
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
