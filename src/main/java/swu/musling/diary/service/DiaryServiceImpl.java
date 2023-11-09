@@ -1,5 +1,8 @@
 package swu.musling.diary.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +35,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DiaryServiceImpl implements DiaryService {
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     private DiaryRepository diaryRepository;
     private RecommendationRepository recommendationRepository;
@@ -129,7 +134,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private EmotionResponseDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
         //1. API URL 설정(호출하려는 인공지능의 URL)
-        String apiUrl = "http://8428-34-16-176-37.ngrok.io/predict";
+        String apiUrl = "http://79be-34-124-197-174.ngrok.io/predict";
         //2. API 요청에서 사용할 HttpHeaders 설정
         //setContentType(MediaType.APPLICATION_JSON)은 요청 본문의 컨텐츠 타입이 JSON 형태임을 나타냄
         HttpHeaders headers = new HttpHeaders();
@@ -151,9 +156,20 @@ public class DiaryServiceImpl implements DiaryService {
         // 감정에 맞는 추천 곡 가져오기
         recommendations.addAll(getMusicRecommendationsByEmotionAndGenre(emotion, preferredGenres, diary));
 
+        // 로깅: 추출된 노래 목록 확인
+        if (logger.isInfoEnabled()) {
+            recommendations.forEach(music -> logger.info("Extracted Music for Weather Recommendation: {}", music.getEmotion()));
+        }
+
+
         // 날씨에 맞는 추천 곡 가져오기
         List<Recommendation> weatherRecommendations = getMusicRecommendationsByWeather(diary.getWeather(), preferredGenres, diary);
         recommendations.addAll(weatherRecommendations);
+
+        // 로깅: 추출된 노래 목록 확인
+        if (logger.isInfoEnabled()) {
+            recommendations.forEach(music -> logger.info("Extracted Music for Weather Recommendation: {}", music.getWeather()));
+        }
 
         // 최대 6곡을 반환
         return recommendations.stream()
@@ -174,17 +190,23 @@ public class DiaryServiceImpl implements DiaryService {
         Category category = categoryRepository.findByName(diary.getWeather())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid weather: " + diary.getWeather()));
 
-        List<Recommendation> recommendations = new ArrayList<>();
+        List<Music> allMusics = new ArrayList<>();
 
         // 연령대에 맞는 년도 범위로 음악 검색
         for (String genre : preferredGenres) {
             List<Music> musics = musicRepository.findByGenresContainingAndYearsBetweenAndCategory(genre, yearRangeStart, currentYear, category);
-            Collections.shuffle(musics);
-            musics.stream()
-                    .limit(3)
-                    .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
-                    .forEach(recommendations::add);
+            allMusics.addAll(musics);
         }
+
+        Collections.shuffle(allMusics); // 전체 음악 리스트를 섞는다.
+
+        List<Recommendation> ageGenreWeatherRecommendations = allMusics.stream()
+                .limit(3) // 전체 리스트에서 상위 3곡만 추출
+                .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
+                .collect(Collectors.toList());
+
+        // 추천 리스트에 추가
+        List<Recommendation> recommendations = new ArrayList<>(ageGenreWeatherRecommendations);
 
         // 날씨에 따른 음악도 추가
         List<Recommendation> weatherRecommendations = getMusicRecommendationsByWeather(diary.getWeather(), preferredGenres, diary);
@@ -202,6 +224,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .coverImagePath(music.getImgs())
                 .singer(music.getSingers())
                 .emotion(emotion)
+                .weather(null)
                 // weather 필드는 설정하지 않음
                 .diary(diary)
                 .build();
@@ -214,6 +237,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .coverImagePath(music.getImgs())
                 .singer(music.getSingers())
                 // emotion 필드는 설정하지 않음
+                .emotion(null)
                 .weather(weather)
                 .diary(diary)
                 .build();
@@ -227,15 +251,20 @@ public class DiaryServiceImpl implements DiaryService {
         Category category = categoryRepository.findByName(emotion.getEmotion())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid emotion: " + emotion));
 
-        List<Recommendation> recommendations = new ArrayList<>();
+        List<Music> allMusicsByEmotion = new ArrayList<>();
         for (String genre : preferredGenres) {
             List<Music> musicsByGenre = musicRepository.findByGenresContainingAndCategory(genre, category);
-            Collections.shuffle(musicsByGenre); // 리스트를 무작위로 섞음
-            musicsByGenre.stream()
-                    .limit(3) // 최대 3곡
-                    .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
-                    .forEach(recommendations::add);
+            allMusicsByEmotion.addAll(musicsByGenre);
         }
+
+        // 전체 리스트를 무작위로 섞음
+        Collections.shuffle(allMusicsByEmotion);
+
+        // 최대 3곡만 추출하여 추천 목록을 생성
+        List<Recommendation> recommendations = allMusicsByEmotion.stream()
+                .limit(3)
+                .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
+                .collect(Collectors.toList());
 
         return recommendations;
     }
@@ -255,10 +284,13 @@ public class DiaryServiceImpl implements DiaryService {
         }
 
         Collections.shuffle(allMusicsByWeather); // 리스트를 무작위로 섞음
-        return allMusicsByWeather.stream()
+
+        List<Recommendation> recommendations = allMusicsByWeather.stream()
                 .limit(3) // 최대 3곡
                 .map(music -> convertToWeatherRecommendation(music, diary, weather))
                 .collect(Collectors.toList());
+
+        return recommendations;
     }
 
     // 연령대에 따른 시작 년도 계산 메소드
