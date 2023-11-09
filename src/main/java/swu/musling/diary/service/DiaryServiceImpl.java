@@ -21,6 +21,7 @@ import swu.musling.music.jpa.CategoryRepository;
 import swu.musling.music.jpa.Music;
 import swu.musling.music.jpa.MusicRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +60,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public CreateDiaryResponseDto createDiary(Member member, CreateDiaryRequestDto requestDto) {
+    public CreateDiaryResponseDto createDiary(Member member, CreateDiaryRequestDto requestDto) {    //일기 등록
 
         // 1. 인공지능 API 호출
         EmotionResponseDto emotion = getEmotionFromAI(requestDto);
@@ -101,6 +102,14 @@ public class DiaryServiceImpl implements DiaryService {
         // 추가적인 저장 로직은 필요하지 않습니다.
 
         return CreateDiaryResponseDto.fromEntity(diary);
+    }
+
+    @Override
+    @Transactional
+    public void deleteDiary(Long diaryId) { //일기 삭제
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new EntityNotFoundException("Diary with id " + diaryId + " not found"));
+        diaryRepository.delete(diary);
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
@@ -173,7 +182,7 @@ public class DiaryServiceImpl implements DiaryService {
             Collections.shuffle(musics);
             musics.stream()
                     .limit(3)
-                    .map(music -> convertToRecommendation(music, diary, emotion.getEmotion()))
+                    .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
                     .forEach(recommendations::add);
         }
 
@@ -186,14 +195,26 @@ public class DiaryServiceImpl implements DiaryService {
                 .collect(Collectors.toList());
     }
 
-    // Music 객체를 Recommendation 객체로 변환하는 메소드
-    private Recommendation convertToRecommendation(Music music, Diary diary, String emotion) {
+    // Music 객체를 감정 기반의 추천 객체로 변환하는 메소드
+    private Recommendation convertToEmotionRecommendation(Music music, Diary diary, String emotion) {
         return Recommendation.builder()
                 .songTitle(music.getTitles())
                 .coverImagePath(music.getImgs())
                 .singer(music.getSingers())
                 .emotion(emotion)
-                .weather(diary.getWeather()) // 예를 들어 Diary 객체에서 날씨 정보를 가져옴
+                // weather 필드는 설정하지 않음
+                .diary(diary)
+                .build();
+    }
+
+    // Music 객체를 날씨 기반의 추천 객체로 변환하는 메소드
+    private Recommendation convertToWeatherRecommendation(Music music, Diary diary, String weather) {
+        return Recommendation.builder()
+                .songTitle(music.getTitles())
+                .coverImagePath(music.getImgs())
+                .singer(music.getSingers())
+                // emotion 필드는 설정하지 않음
+                .weather(weather)
                 .diary(diary)
                 .build();
     }
@@ -212,7 +233,7 @@ public class DiaryServiceImpl implements DiaryService {
             Collections.shuffle(musicsByGenre); // 리스트를 무작위로 섞음
             musicsByGenre.stream()
                     .limit(3) // 최대 3곡
-                    .map(music -> convertToRecommendation(music, diary, emotion.getEmotion()))
+                    .map(music -> convertToEmotionRecommendation(music, diary, emotion.getEmotion()))
                     .forEach(recommendations::add);
         }
 
@@ -236,7 +257,7 @@ public class DiaryServiceImpl implements DiaryService {
         Collections.shuffle(allMusicsByWeather); // 리스트를 무작위로 섞음
         return allMusicsByWeather.stream()
                 .limit(3) // 최대 3곡
-                .map(music -> convertToRecommendation(music, diary, weather))
+                .map(music -> convertToWeatherRecommendation(music, diary, weather))
                 .collect(Collectors.toList());
     }
 

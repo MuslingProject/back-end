@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class CreateDiaryResponseDto {
+    private Long diaryId;
     private String title;
     private LocalDate date;
     private String weather;
@@ -27,6 +28,7 @@ public class CreateDiaryResponseDto {
                 .collect(Collectors.toList());
 
         return CreateDiaryResponseDto.builder()
+                .diaryId(diary.getDiaryId())
                 .title(diary.getTitle())
                 .date(diary.getDate())
                 .weather(diary.getWeather())

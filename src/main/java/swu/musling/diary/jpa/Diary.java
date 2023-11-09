@@ -45,8 +45,9 @@ public class Diary {
     private List<Recommendation> recommendations = new ArrayList<>();
 
     @Builder
-    public Diary(String title, LocalDate date, String weather, String content, String mood,
+    public Diary(Long diaryId, String title, LocalDate date, String weather, String content, String mood,
                  Member member) {
+        this.diaryId = diaryId;
         this.title = title;
         this.date = date;
         this.weather = weather;
