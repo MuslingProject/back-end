@@ -29,17 +29,23 @@ public class DiaryController {
 
     // 일기 삭제 요청 처리
     @DeleteMapping("/{diaryId}")
-    public ApiResponse<?> deleteDiary(@PathVariable Long diaryId) {
-        diaryService.deleteDiary(diaryId);
+    public ApiResponse<?> deleteDiary(@AuthenticationPrincipal SecurityUser principal,
+                                      @PathVariable Long diaryId) {
+        diaryService.deleteDiary(principal.getMember(), diaryId);
         return ApiResponse.createSuccessWithNoData("일기 삭제 성공");
     }
 
     // 일기 개별 조회 요청 처리
     @GetMapping("/{diaryId}")
-    public ApiResponse<DiaryResponseDto> getDiary(@PathVariable Long diaryId) {
+    public ApiResponse<DiaryResponseDto> getDiary(@AuthenticationPrincipal SecurityUser principal,
+                                                  @PathVariable Long diaryId) {
         DiaryResponseDto diary = diaryService.getDiary(diaryId);
         return ApiResponse.createSuccess(diary);
     }
+
+    //특정 날짜 일기 전체 조회
+    //일기 전체 조회
+    //감정 개수 조회
 
 }
 

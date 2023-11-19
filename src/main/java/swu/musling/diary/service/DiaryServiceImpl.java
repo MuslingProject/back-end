@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -112,9 +113,15 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void deleteDiary(Long diaryId) { //일기 삭제
+    public void deleteDiary(Member member, Long diaryId) { //일기 삭제
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new EntityNotFoundException("Diary with id " + diaryId + " not found"));
+
+        // 사용자 확인
+        if (!diary.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new AccessDeniedException("You are not authorized to delete this diary");
+        }
+
         diaryRepository.delete(diary);
     }
 
