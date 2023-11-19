@@ -27,6 +27,7 @@ import swu.musling.music.jpa.Music;
 import swu.musling.music.jpa.MusicRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -137,6 +138,15 @@ public class DiaryServiceImpl implements DiaryService {
         }
 
         return DiaryResponseDto.fromEntity(diary);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiaryResponseDto> getDiariesByDate(Member member, LocalDate date) {
+        List<Diary> diaries = diaryRepository.findAllByMemberAndDate(member, date);
+        return diaries.stream()
+                .map(DiaryResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르

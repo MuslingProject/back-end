@@ -10,6 +10,9 @@ import swu.musling.diary.dto.CreateDiaryResponseDto;
 import swu.musling.diary.dto.DiaryResponseDto;
 import swu.musling.diary.service.DiaryService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/diaries")
 public class DiaryController {
@@ -39,11 +42,16 @@ public class DiaryController {
     @GetMapping("/{diaryId}")
     public ApiResponse<DiaryResponseDto> getDiary(@AuthenticationPrincipal SecurityUser principal,
                                                   @PathVariable Long diaryId) {
-        DiaryResponseDto diary = diaryService.getDiary(principal.getMember(), diaryId);
-        return ApiResponse.createSuccess(diary);
+        return ApiResponse.createSuccess(diaryService.getDiary(principal.getMember(), diaryId));
     }
 
-    //특정 날짜 일기 전체 조회
+    // 특정 날짜에 작성된 모든 일기 조회 요청 처리
+    @GetMapping("/{date}")
+    public ApiResponse<List<DiaryResponseDto>> getDiariesByDate(@AuthenticationPrincipal SecurityUser principal,
+                                                                @PathVariable LocalDate date) {
+        return ApiResponse.createSuccess(diaryService.getDiariesByDate(principal.getMember(), date));
+    }
+
     //일기 전체 조회
     //감정 개수 조회
 
