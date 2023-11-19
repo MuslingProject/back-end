@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import swu.musling.diary.dto.CreateDiaryRequestDto;
 import swu.musling.diary.dto.CreateDiaryResponseDto;
+import swu.musling.diary.dto.DiaryResponseDto;
 import swu.musling.diary.dto.EmotionResponseDto;
 import swu.musling.diary.jpa.Diary;
 import swu.musling.diary.jpa.DiaryRepository;
@@ -117,6 +118,13 @@ public class DiaryServiceImpl implements DiaryService {
         diaryRepository.delete(diary);
     }
 
+    @Override
+    public DiaryResponseDto getDiary(Long diaryId) {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new EntityNotFoundException("Diary not found with id: " + diaryId));
+        return DiaryResponseDto.fromEntity(diary);
+    }
+
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
         Genre genre = member.getGenre(); // member에서 Genre 정보를 가져옴
         List<String> preferredGenres = new ArrayList<>();
@@ -134,7 +142,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private EmotionResponseDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
         //1. API URL 설정(호출하려는 인공지능의 URL)
-        String apiUrl = "http://79be-34-124-197-174.ngrok.io/predict";
+        String apiUrl = "http://8fb4-35-194-130-104.ngrok.io/predict";
         //2. API 요청에서 사용할 HttpHeaders 설정
         //setContentType(MediaType.APPLICATION_JSON)은 요청 본문의 컨텐츠 타입이 JSON 형태임을 나타냄
         HttpHeaders headers = new HttpHeaders();

@@ -7,9 +7,11 @@ import swu.musling.ApiResponse;
 import swu.musling.config.security.SecurityUser;
 import swu.musling.diary.dto.CreateDiaryRequestDto;
 import swu.musling.diary.dto.CreateDiaryResponseDto;
+import swu.musling.diary.dto.DiaryResponseDto;
 import swu.musling.diary.service.DiaryService;
 
 @RestController
+@RequestMapping("/diaries")
 public class DiaryController {
     private DiaryService diaryService;
 
@@ -19,7 +21,7 @@ public class DiaryController {
     }
 
     // 일기 등록 요청 처리
-    @PostMapping("/diaries")
+    @PostMapping
     public ApiResponse<CreateDiaryResponseDto> createDiary(@AuthenticationPrincipal SecurityUser principal,
                                                            @RequestBody CreateDiaryRequestDto requestDto) {
         return ApiResponse.createSuccess(diaryService.createDiary(principal.getMember(), requestDto));
@@ -31,5 +33,13 @@ public class DiaryController {
         diaryService.deleteDiary(diaryId);
         return ApiResponse.createSuccessWithNoData("일기 삭제 성공");
     }
+
+    // 일기 개별 조회 요청 처리
+    @GetMapping("/{diaryId}")
+    public ApiResponse<DiaryResponseDto> getDiary(@PathVariable Long diaryId) {
+        DiaryResponseDto diary = diaryService.getDiary(diaryId);
+        return ApiResponse.createSuccess(diary);
+    }
+
 }
 
