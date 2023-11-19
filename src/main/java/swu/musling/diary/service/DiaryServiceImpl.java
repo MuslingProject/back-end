@@ -126,9 +126,16 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public DiaryResponseDto getDiary(Long diaryId) {
+    @Transactional(readOnly = true)
+    public DiaryResponseDto getDiary(Member member, Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new EntityNotFoundException("Diary not found with id: " + diaryId));
+
+        // 사용자 확인
+        if (!diary.getMember().getMemberId().equals(member.getMemberId())) {
+            throw new AccessDeniedException("You are not authorized to delete this diary");
+        }
+
         return DiaryResponseDto.fromEntity(diary);
     }
 

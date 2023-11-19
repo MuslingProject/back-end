@@ -39,7 +39,7 @@ public class DiaryController {
     @GetMapping("/{diaryId}")
     public ApiResponse<DiaryResponseDto> getDiary(@AuthenticationPrincipal SecurityUser principal,
                                                   @PathVariable Long diaryId) {
-        DiaryResponseDto diary = diaryService.getDiary(diaryId);
+        DiaryResponseDto diary = diaryService.getDiary(principal.getMember(), diaryId);
         return ApiResponse.createSuccess(diary);
     }
 
