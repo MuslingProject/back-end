@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -147,6 +149,12 @@ public class DiaryServiceImpl implements DiaryService {
         return diaries.stream()
                 .map(DiaryResponseDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<DiaryResponseDto> getAllDiaries(Member member, Pageable pageable) {
+        Page<Diary> diariesPage = diaryRepository.findAllByMember(member, pageable);
+        return diariesPage.map(DiaryResponseDto::fromEntity);
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
