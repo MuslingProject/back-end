@@ -13,4 +13,5 @@ import java.util.List;
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
     List<Diary> findAllByMemberAndDate(Member member, LocalDate date);
     Page<Diary> findAllByMember(Member member, Pageable pageable);
+    List<Diary> findAllByMember(Member member);
 }

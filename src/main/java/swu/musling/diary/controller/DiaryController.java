@@ -10,6 +10,7 @@ import swu.musling.config.security.SecurityUser;
 import swu.musling.diary.dto.CreateDiaryRequestDto;
 import swu.musling.diary.dto.CreateDiaryResponseDto;
 import swu.musling.diary.dto.DiaryResponseDto;
+import swu.musling.diary.dto.EmotionCountResponseDto;
 import swu.musling.diary.service.DiaryService;
 
 import java.time.LocalDate;
@@ -76,6 +77,9 @@ public class DiaryController {
     }
 
     //감정 개수 조회
-
+    @GetMapping("/emotions")
+    public ApiResponse<EmotionCountResponseDto> getEmotionCounts(@AuthenticationPrincipal SecurityUser principal) {
+        return ApiResponse.createSuccess(diaryService.getEmotionCounts(principal.getMember()));
+    }
 }
 

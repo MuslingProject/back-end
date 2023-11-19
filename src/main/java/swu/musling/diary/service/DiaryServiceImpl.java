@@ -13,10 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import swu.musling.diary.dto.CreateDiaryRequestDto;
-import swu.musling.diary.dto.CreateDiaryResponseDto;
-import swu.musling.diary.dto.DiaryResponseDto;
-import swu.musling.diary.dto.EmotionResponseDto;
+import swu.musling.diary.dto.*;
 import swu.musling.diary.jpa.Diary;
 import swu.musling.diary.jpa.DiaryRepository;
 import swu.musling.diary.jpa.Recommendation;
@@ -152,9 +149,38 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<DiaryResponseDto> getAllDiaries(Member member, Pageable pageable) {
         Page<Diary> diariesPage = diaryRepository.findAllByMember(member, pageable);
         return diariesPage.map(DiaryResponseDto::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EmotionCountResponseDto getEmotionCounts(Member member) {
+        //회원의 모든 일기 조회
+        List<Diary> diaries = diaryRepository.findAllByMember(member);
+        //감정별 일기 수집 및 개수 계산
+        Map<String, Long> emotionCounts = diaries.stream()  //일기를 스트림으로 변환
+                /*
+                collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()))는 스트림의 각 Diary 객체에서 getMood() 메서드를 호출하여 감정(mood) 값을 가져옵니다.
+                groupingBy는 이 감정 값을 기준으로 일기를 그룹화하고, counting() 컬렉터는 각 그룹에 속하는 일기의 수를 세어 Map<String, Long> 형태로 결과를 반환합니다.
+                여기서 키(String)는 감정의 이름이고 값(Long)은 해당 감정을 가진 일기의 개수입니다.
+                 */
+                .collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()));
+        /*
+        emotionCounts 맵의 엔트리셋(각각의 키-값 쌍) 중 값(Long)이 가장 큰 엔트리를 찾습니다. 이 값은 가장 자주 등장하는 감정의 빈도수를 나타냅니다.
+        getKey() 메서드는 이 엔트리의 키, 즉 가장 자주 등장하는 감정의 이름을 반환합니다.
+        emotionCounts.get(mostFrequentEmotion)는 이 감정의 이름을 사용하여 그 감정이 몇 번 등장했는지, 즉 빈도수를 찾습니다.
+         */
+        String mostFrequentEmotion = Collections.max(emotionCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+        Long count = emotionCounts.get(mostFrequentEmotion);
+
+        return EmotionCountResponseDto.builder()
+                .emotionCounts(emotionCounts)
+                .mostFrequentEmotion(mostFrequentEmotion)
+                .mostFrequentEmotionCount(count)
+                .build();
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import swu.musling.diary.dto.CreateDiaryRequestDto;
 import swu.musling.diary.dto.CreateDiaryResponseDto;
 import swu.musling.diary.dto.DiaryResponseDto;
+import swu.musling.diary.dto.EmotionCountResponseDto;
 import swu.musling.member.jpa.Member;
 
 import java.time.LocalDate;
@@ -16,5 +17,6 @@ public interface DiaryService {
     DiaryResponseDto getDiary(Member member, Long diaryId);    //일기 개별 조회
     List<DiaryResponseDto> getDiariesByDate(Member member, LocalDate date); //특정 날짜 일기 전체 조회
     Page<DiaryResponseDto> getAllDiaries(Member member, Pageable pageable); //일기 전체 조회
+    EmotionCountResponseDto getEmotionCounts(Member member);    //감정 개수 조회
 }
 
