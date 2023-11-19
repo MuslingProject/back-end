@@ -8,6 +8,7 @@ import swu.musling.member.jpa.Member;
 
 @Data
 public class MemberResponseDto {
+    private String email;
     private String profileImageUrl;
     private String name;
     private String age;
@@ -15,7 +16,8 @@ public class MemberResponseDto {
     private GenreResponseDto preferredGenres;
 
     @Builder
-    public MemberResponseDto(String profileImageUrl, String name, String age, boolean ageRecommendation, Genre genre) {
+    public MemberResponseDto(String email, String profileImageUrl, String name, String age, boolean ageRecommendation, Genre genre) {
+        this.email = email;
         this.profileImageUrl = profileImageUrl;
         this.name = name;
         this.age = age;
@@ -25,6 +27,7 @@ public class MemberResponseDto {
 
     public static MemberResponseDto of(Member member) {
         return MemberResponseDto.builder()
+                .email(member.getEmail())
                 .profileImageUrl(member.getProfile().getImageUrl())
                 .name(member.getName())
                 .age(member.getAge())
