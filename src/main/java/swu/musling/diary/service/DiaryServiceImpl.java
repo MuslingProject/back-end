@@ -174,7 +174,7 @@ public class DiaryServiceImpl implements DiaryService {
         emotionCounts.get(mostFrequentEmotion)는 이 감정의 이름을 사용하여 그 감정이 몇 번 등장했는지, 즉 빈도수를 찾습니다.
          */
         String mostFrequentEmotion = Collections.max(emotionCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
-        Long count = emotionCounts.get(mostFrequentEmotion);
+            Long count = emotionCounts.get(mostFrequentEmotion);
 
         return EmotionCountResponseDto.builder()
                 .emotionCounts(emotionCounts)
@@ -200,7 +200,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private EmotionResponseDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
         //1. API URL 설정(호출하려는 인공지능의 URL)
-        String apiUrl = "http://8fb4-35-194-130-104.ngrok.io/predict";
+        String apiUrl = "http://0689-35-234-175-7.ngrok.io/predict";
         //2. API 요청에서 사용할 HttpHeaders 설정
         //setContentType(MediaType.APPLICATION_JSON)은 요청 본문의 컨텐츠 타입이 JSON 형태임을 나타냄
         HttpHeaders headers = new HttpHeaders();

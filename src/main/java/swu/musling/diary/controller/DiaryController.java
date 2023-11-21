@@ -81,5 +81,7 @@ public class DiaryController {
     public ApiResponse<EmotionCountResponseDto> getEmotionCounts(@AuthenticationPrincipal SecurityUser principal) {
         return ApiResponse.createSuccess(diaryService.getEmotionCounts(principal.getMember()));
     }
+
+
 }
 
