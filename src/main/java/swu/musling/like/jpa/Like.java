@@ -1,5 +1,6 @@
 package swu.musling.like.jpa;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import swu.musling.member.jpa.Member;
@@ -13,8 +14,8 @@ import javax.persistence.*;
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "music_id")
-    private Integer musicId;
+    @Column(name = "like_id")
+    private Integer likeId;
 
     @Column(name = "titles", nullable = false)
     private String titles;
@@ -30,4 +31,15 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @Builder
+    public Like(String titles, String imgs, String singers, String emotion, String weather,
+                Member member) {
+        this.titles = titles;
+        this.imgs = imgs;
+        this.singers = singers;
+        this.emotion = emotion;
+        this.weather = weather;
+        this.member = member;
+    }
 }

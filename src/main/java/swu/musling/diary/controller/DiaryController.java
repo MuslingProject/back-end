@@ -49,7 +49,7 @@ public class DiaryController {
     }
 
     // 특정 날짜에 작성된 모든 일기 조회 요청 처리
-    @GetMapping("/{date}")
+    @GetMapping("date/{date}")
     public ApiResponse<List<DiaryResponseDto>> getDiariesByDate(@AuthenticationPrincipal SecurityUser principal,
                                                                 @PathVariable LocalDate date) {
         return ApiResponse.createSuccess(diaryService.getDiariesByDate(principal.getMember(), date));
