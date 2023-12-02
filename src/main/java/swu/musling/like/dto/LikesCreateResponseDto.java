@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class LikeCreateResponseDto {
+public class LikesCreateResponseDto {
     private Integer likeIds;
 }
 

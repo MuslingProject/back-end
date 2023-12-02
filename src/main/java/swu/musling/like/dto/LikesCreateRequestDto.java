@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class LikeCreateRequestDto {
+public class LikesCreateRequestDto {
     private String titles;
     private String imgs;
     private String singers;
