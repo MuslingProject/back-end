@@ -70,7 +70,7 @@ public class DiaryServiceImpl implements DiaryService {
     public CreateDiaryResponseDto createDiary(Member member, CreateDiaryRequestDto requestDto) {    //일기 등록
 
         // 1. 인공지능 API 호출
-        EmotionResponseDto emotion = getEmotionFromAI(requestDto);
+        EmotionDto emotion = getEmotionFromAI(requestDto);
 
         // Diary 객체를 데이터베이스에 저장합니다. 이 때, 기본 키가 생성됩니다.
         Diary diary = diaryRepository.save(Diary.builder()
@@ -183,6 +183,37 @@ public class DiaryServiceImpl implements DiaryService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    public void reRecommendSongs(Long diaryId, EmotionDto emotionDto, Member member) {
+        Diary diary = diaryRepository.findByDiaryIdAndMember(diaryId, member);
+
+        List<String> preferredGenres = getPreferredGenres(member);
+
+
+        List<Recommendation> newRecommendations;
+        if (member.isAgeRecommendation()) { // 2-1. 연령대 노래 추천을 받는 사용자라면
+            // 3. true일 경우 emotion, age, genre, weather로 노래 추천
+            newRecommendations = getMusicRecommendationsByEmotionAgeAndGenreAndWeather(emotionDto, preferredGenres, diary, member);
+        } else {    // 2-2. 연령대 노래 추천을 받지 않는 사용자라면
+            // 4. false일 경우 emotion, genre, weather로 노래 추천
+            newRecommendations = getMusicRecommendationsByEmotionGenreAndWeather(emotionDto, preferredGenres, diary);
+        }
+
+        // 기존 추천 목록 삭제
+        diary.getRecommendations().clear();
+        // 새로운 추천 목록 추가
+        newRecommendations.forEach(newRecommendation ->
+                diary.addRecommendation(
+                        newRecommendation.getSongTitle(),
+                        newRecommendation.getCoverImagePath(),
+                        newRecommendation.getSinger(),
+                        newRecommendation.getEmotion(),
+                        newRecommendation.getWeather()
+                )
+        );
+    }
+
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
         Genre genre = member.getGenre(); // member에서 Genre 정보를 가져옴
         List<String> preferredGenres = new ArrayList<>();
@@ -198,9 +229,9 @@ public class DiaryServiceImpl implements DiaryService {
         return preferredGenres;
     }
 
-    private EmotionResponseDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
+    private EmotionDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
         //1. API URL 설정(호출하려는 인공지능의 URL)
-        String apiUrl = "http://ca86-34-28-36-155.ngrok.io/predict";
+        String apiUrl = "http://abd1-34-16-162-185.ngrok.io /predict";
         //2. API 요청에서 사용할 HttpHeaders 설정
         //setContentType(MediaType.APPLICATION_JSON)은 요청 본문의 컨텐츠 타입이 JSON 형태임을 나타냄
         HttpHeaders headers = new HttpHeaders();
@@ -210,13 +241,13 @@ public class DiaryServiceImpl implements DiaryService {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(Map.of("sentence", requestDto.getContent()), headers);
         //4. 인공지능 API 호출
         //여기서는 apiUrl에 POST 요청을 보내고, 요청 본문으로 entity를 전달합니다. 응답은 String.class 타입으로 받아와 emotion 변수에 저장한다.
-        return restTemplate.postForObject(apiUrl, entity, EmotionResponseDto.class);
+        return restTemplate.postForObject(apiUrl, entity, EmotionDto.class);
     }
 
     //emotion, genre, weather로 노래 추천
-    private List<Recommendation> getMusicRecommendationsByEmotionGenreAndWeather(EmotionResponseDto emotion,
-                                                                          List<String> preferredGenres,
-                                                                          Diary diary) {
+    private List<Recommendation> getMusicRecommendationsByEmotionGenreAndWeather(EmotionDto emotion,
+                                                                                 List<String> preferredGenres,
+                                                                                 Diary diary) {
         List<Recommendation> recommendations = new ArrayList<>();
 
         // 감정에 맞는 추천 곡 가져오기
@@ -245,10 +276,10 @@ public class DiaryServiceImpl implements DiaryService {
 
     //age, emotion, genre, weather로 노래 추천
     @Transactional(readOnly = true)
-    public List<Recommendation> getMusicRecommendationsByEmotionAgeAndGenreAndWeather(EmotionResponseDto emotion,
-                                                                                       List<String> preferredGenres,
-                                                                                       Diary diary,
-                                                                                       Member member) {
+    public List<Recommendation> getMusicRecommendationsByEmotionAgeAndGenreAndWeather(EmotionDto emotion,
+                                                                                      List<String> preferredGenres,
+                                                                                      Diary diary,
+                                                                                      Member member) {
         int currentYear = Year.now().getValue();
         int age = parseAgeFromString(member.getAge()); // 연령대 문자열을 정수로 변환
         int yearRangeStart = getYearRangeStartForAge(age, currentYear);
@@ -311,9 +342,9 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Transactional(readOnly = true)
     // 감정과 장르에 따른 노래 추천 로직에 무작위 추출 로직 추가
-    public List<Recommendation> getMusicRecommendationsByEmotionAndGenre(EmotionResponseDto emotion,
-                                                                          List<String> preferredGenres,
-                                                                          Diary diary) {
+    public List<Recommendation> getMusicRecommendationsByEmotionAndGenre(EmotionDto emotion,
+                                                                         List<String> preferredGenres,
+                                                                         Diary diary) {
         Category category = categoryRepository.findByName(emotion.getEmotion())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid emotion: " + emotion));
 

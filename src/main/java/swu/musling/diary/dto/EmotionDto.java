@@ -1,8 +1,10 @@
 package swu.musling.diary.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class EmotionResponseDto {
+@Builder
+public class EmotionDto {
     private String emotion;
 }
