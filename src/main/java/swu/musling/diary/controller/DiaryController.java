@@ -7,10 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import swu.musling.ApiResponse;
 import swu.musling.config.security.SecurityUser;
-import swu.musling.diary.dto.CreateDiaryRequestDto;
-import swu.musling.diary.dto.CreateDiaryResponseDto;
-import swu.musling.diary.dto.DiaryResponseDto;
-import swu.musling.diary.dto.EmotionCountResponseDto;
+import swu.musling.diary.dto.*;
 import swu.musling.diary.service.DiaryService;
 
 import java.time.LocalDate;
@@ -49,7 +46,7 @@ public class DiaryController {
     }
 
     // 특정 날짜에 작성된 모든 일기 조회 요청 처리
-    @GetMapping("/{date}")
+    @GetMapping("date/{date}")
     public ApiResponse<List<DiaryResponseDto>> getDiariesByDate(@AuthenticationPrincipal SecurityUser principal,
                                                                 @PathVariable LocalDate date) {
         return ApiResponse.createSuccess(diaryService.getDiariesByDate(principal.getMember(), date));
@@ -81,5 +78,15 @@ public class DiaryController {
     public ApiResponse<EmotionCountResponseDto> getEmotionCounts(@AuthenticationPrincipal SecurityUser principal) {
         return ApiResponse.createSuccess(diaryService.getEmotionCounts(principal.getMember()));
     }
+
+    // 노래 재추천 요청 처리
+    @PutMapping("/{diaryId}/recommendations")
+    public ApiResponse<?> reRecommendSongs(@AuthenticationPrincipal SecurityUser principal,
+                                           @PathVariable Long diaryId,
+                                           @RequestBody EmotionDto emotionDto) {
+        diaryService.reRecommendSongs(diaryId, emotionDto, principal.getMember());
+        return ApiResponse.createSuccessWithNoData("노래 재추천 완료");
+    }
+
 }
 

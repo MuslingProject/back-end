@@ -3,7 +3,6 @@ package swu.musling.member.jpa;
 import lombok.*;
 import swu.musling.BaseTimeEntity;
 import swu.musling.diary.jpa.Diary;
-import swu.musling.diary.jpa.Recommendation;
 import swu.musling.genre.jpa.Genre;
 import swu.musling.member.Role;
 
@@ -46,6 +45,10 @@ public class Member extends BaseTimeEntity {
     // 1:n 관계 설정
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Diary> diaries = new ArrayList<>();
+
+//    // 1:n 관계 설정
+//    @OneToMany(mappedBy = "like", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Like> likes = new ArrayList<>();
 
 
     @Builder
