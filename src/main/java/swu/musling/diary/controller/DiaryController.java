@@ -82,10 +82,8 @@ public class DiaryController {
     // 노래 재추천 요청 처리
     @PutMapping("/{diaryId}/recommendations")
     public ApiResponse<?> reRecommendSongs(@AuthenticationPrincipal SecurityUser principal,
-                                           @PathVariable Long diaryId,
-                                           @RequestBody EmotionDto emotionDto) {
-        diaryService.reRecommendSongs(diaryId, emotionDto, principal.getMember());
-        return ApiResponse.createSuccessWithNoData("노래 재추천 완료");
+                                           @PathVariable Long diaryId) {
+        return ApiResponse.createSuccess(diaryService.reRecommendSongs(diaryId, principal.getMember()));
     }
 
 }

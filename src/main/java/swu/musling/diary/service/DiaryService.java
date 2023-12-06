@@ -15,6 +15,6 @@ public interface DiaryService {
     List<DiaryResponseDto> getDiariesByDate(Member member, LocalDate date); //특정 날짜 일기 전체 조회
     Page<DiaryResponseDto> getAllDiaries(Member member, Pageable pageable); //일기 전체 조회
     EmotionCountResponseDto getEmotionCounts(Member member);    //감정 개수 조회
-    void reRecommendSongs(Long diaryId, EmotionDto emotionDto, Member member); //노래 재추천
+    List<RecommendationDto> reRecommendSongs(Long diaryId, Member member); //노래 재추천
 }
 

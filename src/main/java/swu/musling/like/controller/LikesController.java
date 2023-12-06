@@ -25,7 +25,7 @@ public class LikesController {
     @PostMapping
     public ApiResponse<?> createLike(@RequestBody LikesCreateRequestDto likesCreateRequestDto,
                                      @AuthenticationPrincipal SecurityUser principal) {
-        return ApiResponse.createSuccess(likesService.saveLike(likesCreateRequestDto, principal.getMember()));
+        return ApiResponse.createSuccess(likesService.saveLikes(likesCreateRequestDto, principal.getMember()));
     }
 
     //찜한 노래 취소

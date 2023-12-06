@@ -8,7 +8,7 @@ import swu.musling.member.jpa.Member;
 import java.util.List;
 
 public interface LikesService {
-    LikesCreateResponseDto saveLike(LikesCreateRequestDto likesCreateRequestDto, Member member);    //일기 찜하기
+    LikesCreateResponseDto saveLikes(LikesCreateRequestDto likesCreateRequestDto, Member member);    //일기 찜하기
     void deleteLike(Integer likeId, Member member);
     List<LikesResponseDto> getLikes(Member member);
 }

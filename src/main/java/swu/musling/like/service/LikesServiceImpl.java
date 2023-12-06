@@ -26,21 +26,35 @@ public class LikesServiceImpl implements LikesService {
 
     @Override
     @Transactional
-    public LikesCreateResponseDto saveLike(LikesCreateRequestDto likesCreateRequestDto, Member member) {
-        Likes like = Likes.builder()
-                .titles(likesCreateRequestDto.getTitles())
-                .imgs(likesCreateRequestDto.getImgs())
-                .singers(likesCreateRequestDto.getSingers())
-                .emotion(likesCreateRequestDto.getEmotion())
-                .weather(likesCreateRequestDto.getWeather())
-                .member(member)
-                .build();
-        likesRepository.save(like);
+    public LikesCreateResponseDto saveLikes(LikesCreateRequestDto likesCreateRequestDto, Member member) {
+        List<LikesCreateResponseDto.LikeInfo> likeInfos = likesCreateRequestDto.getLikes().stream()
+                .map(likeData -> {
+                    Likes like = Likes.builder()
+                            .titles(likeData.getTitles())
+                            .imgs(likeData.getImgs())
+                            .singers(likeData.getSingers())
+                            .emotion(likeData.getEmotion())
+                            .weather(likeData.getWeather())
+                            .member(member)
+                            .build();
+                    likesRepository.save(like);
+
+                    return LikesCreateResponseDto.LikeInfo.builder()
+                            .likeId(like.getLikesId())
+                            .titles(like.getTitles())
+                            .imgs(like.getImgs())
+                            .singers(like.getSingers())
+                            .emotion(like.getEmotion())
+                            .weather(like.getWeather())
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         return LikesCreateResponseDto.builder()
-                .likeIds(like.getLikesId())
+                .likes(likeInfos)
                 .build();
     }
+
 
     @Override
     @Transactional
