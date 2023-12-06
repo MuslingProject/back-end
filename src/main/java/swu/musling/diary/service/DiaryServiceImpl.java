@@ -272,7 +272,7 @@ public class DiaryServiceImpl implements DiaryService {
     public List<DiaryResponseDto> getFavoriteDiaries(Member member) {
         List<Diary> favoriteDiaries = diaryRepository.findAllByMemberAndIsFavoritedIsTrue(member);
         return favoriteDiaries.stream()
-                .map(DiaryResponseDto::fromEntityForFavorite)
+                .map(DiaryResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
