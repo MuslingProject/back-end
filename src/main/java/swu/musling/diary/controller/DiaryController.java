@@ -82,10 +82,22 @@ public class DiaryController {
     // 노래 재추천 요청 처리
     @PutMapping("/{diaryId}/recommendations")
     public ApiResponse<?> reRecommendSongs(@AuthenticationPrincipal SecurityUser principal,
-                                           @PathVariable Long diaryId,
-                                           @RequestBody EmotionDto emotionDto) {
-        diaryService.reRecommendSongs(diaryId, emotionDto, principal.getMember());
-        return ApiResponse.createSuccessWithNoData("노래 재추천 완료");
+                                           @PathVariable Long diaryId) {
+        return ApiResponse.createSuccess(diaryService.reRecommendSongs(diaryId, principal.getMember()));
+    }
+
+    //일기 찜 상태 변경
+    @PutMapping("/{diaryId}/favorite")
+    public ApiResponse<?> toggleDiaryFavorite(@AuthenticationPrincipal SecurityUser principal,
+                                              @PathVariable Long diaryId) {
+        diaryService.updateDiaryFavorite(diaryId, principal.getMember());
+        return ApiResponse.createSuccessWithNoData("Diary favorite state updated");
+    }
+
+    // 찜한 일기 조회
+    @GetMapping("/favorites")
+    public ApiResponse<List<DiaryResponseDto>> getFavoriteDiaries(@AuthenticationPrincipal SecurityUser principal) {
+        return ApiResponse.createSuccess(diaryService.getFavoriteDiaries(principal.getMember()));
     }
 
 }

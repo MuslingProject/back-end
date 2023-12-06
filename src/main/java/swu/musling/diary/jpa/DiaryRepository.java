@@ -15,4 +15,5 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Page<Diary> findAllByMember(Member member, Pageable pageable);
     List<Diary> findAllByMember(Member member);
     Diary findByDiaryIdAndMember(Long diaryId, Member member);
+    List<Diary> findAllByMemberAndIsFavoritedIsTrue(Member member);
 }

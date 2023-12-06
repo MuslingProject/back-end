@@ -28,10 +28,7 @@ import swu.musling.music.jpa.MusicRepository;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,6 +76,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .weather(requestDto.getWeather())
                 .content(requestDto.getContent())
                 .mood(emotion.getEmotion())
+                .isFavorited(false)
                 .member(member)
                 .build());
 
@@ -158,46 +156,89 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     @Transactional(readOnly = true)
     public EmotionCountResponseDto getEmotionCounts(Member member) {
-        //회원의 모든 일기 조회
+//        //회원의 모든 일기 조회
+//        List<Diary> diaries = diaryRepository.findAllByMember(member);
+//        //감정별 일기 수집 및 개수 계산
+//        Map<String, Long> emotionCounts = diaries.stream()  //일기를 스트림으로 변환
+//                /*
+//                collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()))는 스트림의 각 Diary 객체에서 getMood() 메서드를 호출하여 감정(mood) 값을 가져옵니다.
+//                groupingBy는 이 감정 값을 기준으로 일기를 그룹화하고, counting() 컬렉터는 각 그룹에 속하는 일기의 수를 세어 Map<String, Long> 형태로 결과를 반환합니다.
+//                여기서 키(String)는 감정의 이름이고 값(Long)은 해당 감정을 가진 일기의 개수입니다.
+//                 */
+//                .collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()));
+//        /*
+//        emotionCounts 맵의 엔트리셋(각각의 키-값 쌍) 중 값(Long)이 가장 큰 엔트리를 찾습니다. 이 값은 가장 자주 등장하는 감정의 빈도수를 나타냅니다.
+//        getKey() 메서드는 이 엔트리의 키, 즉 가장 자주 등장하는 감정의 이름을 반환합니다.
+//        emotionCounts.get(mostFrequentEmotion)는 이 감정의 이름을 사용하여 그 감정이 몇 번 등장했는지, 즉 빈도수를 찾습니다.
+//         */
+//        String mostFrequentEmotion = Collections.max(emotionCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+//            Long count = emotionCounts.get(mostFrequentEmotion);
+//
+//        return EmotionCountResponseDto.builder()
+//                .emotionCounts(emotionCounts)
+//                .mostFrequentEmotion(mostFrequentEmotion)
+//                .mostFrequentEmotionCount(count)
+//                .build();
+        // 모든 감정에 대한 초기 맵을 설정합니다. 여기서 값은 0으로 초기화합니다.
+        Map<String, Long> initialEmotionCounts = new HashMap<>();
+        initialEmotionCounts.put("unrest", 0L);
+        initialEmotionCounts.put("depressed", 0L);
+        initialEmotionCounts.put("happy", 0L);
+        initialEmotionCounts.put("sad", 0L);
+        initialEmotionCounts.put("stress", 0L);
+
+        // 회원의 모든 일기에서 감정을 추출하고 빈도를 계산합니다.
         List<Diary> diaries = diaryRepository.findAllByMember(member);
-        //감정별 일기 수집 및 개수 계산
-        Map<String, Long> emotionCounts = diaries.stream()  //일기를 스트림으로 변환
-                /*
-                collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()))는 스트림의 각 Diary 객체에서 getMood() 메서드를 호출하여 감정(mood) 값을 가져옵니다.
-                groupingBy는 이 감정 값을 기준으로 일기를 그룹화하고, counting() 컬렉터는 각 그룹에 속하는 일기의 수를 세어 Map<String, Long> 형태로 결과를 반환합니다.
-                여기서 키(String)는 감정의 이름이고 값(Long)은 해당 감정을 가진 일기의 개수입니다.
-                 */
+        Map<String, Long> countedEmotions = diaries.stream()
                 .collect(Collectors.groupingBy(Diary::getMood, Collectors.counting()));
-        /*
-        emotionCounts 맵의 엔트리셋(각각의 키-값 쌍) 중 값(Long)이 가장 큰 엔트리를 찾습니다. 이 값은 가장 자주 등장하는 감정의 빈도수를 나타냅니다.
-        getKey() 메서드는 이 엔트리의 키, 즉 가장 자주 등장하는 감정의 이름을 반환합니다.
-        emotionCounts.get(mostFrequentEmotion)는 이 감정의 이름을 사용하여 그 감정이 몇 번 등장했는지, 즉 빈도수를 찾습니다.
-         */
-        String mostFrequentEmotion = Collections.max(emotionCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
-            Long count = emotionCounts.get(mostFrequentEmotion);
+
+        // 계산된 감정 빈도를 초기 맵에 업데이트합니다.
+        countedEmotions.forEach((emotion, count) -> {
+            switch (emotion) {
+                case "멘붕/불안":
+                    initialEmotionCounts.put("unrest", count);
+                    break;
+                case "우울":
+                    initialEmotionCounts.put("depressed", count);
+                    break;
+                case "사랑/기쁨":
+                    initialEmotionCounts.put("happy", count);
+                    break;
+                case "이별/슬픔":
+                    initialEmotionCounts.put("sad", count);
+                    break;
+                case "스트레스/짜증":
+                    initialEmotionCounts.put("stress", count);
+                    break;
+            }
+        });
+
+        // 가장 자주 등장하는 감정을 찾습니다.
+        String mostFrequentEmotion = Collections.max(initialEmotionCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+        Long mostFrequentEmotionCount = initialEmotionCounts.get(mostFrequentEmotion);
 
         return EmotionCountResponseDto.builder()
-                .emotionCounts(emotionCounts)
+                .emotionCounts(initialEmotionCounts)
                 .mostFrequentEmotion(mostFrequentEmotion)
-                .mostFrequentEmotionCount(count)
+                .mostFrequentEmotionCount(mostFrequentEmotionCount)
                 .build();
     }
 
     @Override
     @Transactional
-    public void reRecommendSongs(Long diaryId, EmotionDto emotionDto, Member member) {
+    public List<RecommendationDto> reRecommendSongs(Long diaryId, Member member) {
         Diary diary = diaryRepository.findByDiaryIdAndMember(diaryId, member);
 
         List<String> preferredGenres = getPreferredGenres(member);
-
-
         List<Recommendation> newRecommendations;
         if (member.isAgeRecommendation()) { // 2-1. 연령대 노래 추천을 받는 사용자라면
             // 3. true일 경우 emotion, age, genre, weather로 노래 추천
-            newRecommendations = getMusicRecommendationsByEmotionAgeAndGenreAndWeather(emotionDto, preferredGenres, diary, member);
+            newRecommendations = getMusicRecommendationsByEmotionAgeAndGenreAndWeather(
+                    EmotionDto.builder().emotion(diary.getMood()).build(), preferredGenres, diary, member);
         } else {    // 2-2. 연령대 노래 추천을 받지 않는 사용자라면
             // 4. false일 경우 emotion, genre, weather로 노래 추천
-            newRecommendations = getMusicRecommendationsByEmotionGenreAndWeather(emotionDto, preferredGenres, diary);
+            newRecommendations = getMusicRecommendationsByEmotionGenreAndWeather(
+                    EmotionDto.builder().emotion(diary.getMood()).build(), preferredGenres, diary);
         }
 
         // 기존 추천 목록 삭제
@@ -212,6 +253,27 @@ public class DiaryServiceImpl implements DiaryService {
                         newRecommendation.getWeather()
                 )
         );
+
+        // Recommendation 엔티티 목록을 RecommendationDto 목록으로 변환하여 반환
+        return newRecommendations.stream()
+                .map(RecommendationDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void updateDiaryFavorite(Long diaryId, Member member) {  //일기 찜하기 변경
+        Diary diary = diaryRepository.findByDiaryIdAndMember(diaryId, member);
+        diary.toggleFavorite();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiaryResponseDto> getFavoriteDiaries(Member member) {
+        List<Diary> favoriteDiaries = diaryRepository.findAllByMemberAndIsFavoritedIsTrue(member);
+        return favoriteDiaries.stream()
+                .map(DiaryResponseDto::fromEntityForFavorite)
+                .collect(Collectors.toList());
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
@@ -231,7 +293,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private EmotionDto getEmotionFromAI(CreateDiaryRequestDto requestDto) {
         //1. API URL 설정(호출하려는 인공지능의 URL)
-        String apiUrl = "http://abd1-34-16-162-185.ngrok.io /predict";
+        String apiUrl = "http://cde5-34-173-135-226.ngrok.io/predict";
         //2. API 요청에서 사용할 HttpHeaders 설정
         //setContentType(MediaType.APPLICATION_JSON)은 요청 본문의 컨텐츠 타입이 JSON 형태임을 나타냄
         HttpHeaders headers = new HttpHeaders();
