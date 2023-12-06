@@ -86,5 +86,12 @@ public class DiaryController {
         return ApiResponse.createSuccess(diaryService.reRecommendSongs(diaryId, principal.getMember()));
     }
 
+    @PutMapping("/{diaryId}/favorite")
+    public ApiResponse<?> toggleDiaryFavorite(@AuthenticationPrincipal SecurityUser principal,
+                                              @PathVariable Long diaryId) {
+        diaryService.updateDiaryFavorite(diaryId, principal.getMember());
+        return ApiResponse.createSuccessWithNoData("Diary favorite state updated");
+    }
+
 }
 

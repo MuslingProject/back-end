@@ -36,6 +36,9 @@ public class Diary {
     @Column(name = "mood", nullable = false)
     private String mood;
 
+    @Column(name = "is_favorited")
+    private Boolean isFavorited = false;   // 일기 찜하기 기능을 위한 필드, null 허용, 기본값 fasle
+
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -45,7 +48,7 @@ public class Diary {
     private List<Recommendation> recommendations = new ArrayList<>();
 
     @Builder
-    public Diary(Long diaryId, String title, LocalDate date, String weather, String content, String mood,
+    public Diary(Long diaryId, String title, LocalDate date, String weather, String content, String mood, Boolean isFavorited,
                  Member member) {
         this.diaryId = diaryId;
         this.title = title;
@@ -53,8 +56,8 @@ public class Diary {
         this.weather = weather;
         this.content = content;
         this.mood = mood;
+        this.isFavorited = isFavorited == null ? false : isFavorited;  // null이면 false로 설정
         this.member = member;
-        // @Builder.Default를 사용하여 기본값을 설정합니다.
         this.recommendations = new ArrayList<>();
     }
 
@@ -71,4 +74,9 @@ public class Diary {
 
         this.recommendations.add(recommendation);
     }
+
+    public void toggleFavorite() {  //여기서 toggle은 한 값에서 다른값으로 전환함을 의미
+        this.isFavorited = !this.isFavorited;
+    }
+
 }

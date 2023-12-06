@@ -76,6 +76,7 @@ public class DiaryServiceImpl implements DiaryService {
                 .weather(requestDto.getWeather())
                 .content(requestDto.getContent())
                 .mood(emotion.getEmotion())
+                .isFavorited(false)
                 .member(member)
                 .build());
 
@@ -257,6 +258,13 @@ public class DiaryServiceImpl implements DiaryService {
         return newRecommendations.stream()
                 .map(RecommendationDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void updateDiaryFavorite(Long diaryId, Member member) {  //일기 찜하기
+        Diary diary = diaryRepository.findByDiaryIdAndMember(diaryId, member);
+        diary.toggleFavorite();
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르
