@@ -34,18 +34,5 @@ public class DiaryResponseDto {
                 .recommendations(recommendationDtos)
                 .build();
     }
-
-    // 찜한 일기 조회에 사용할 오버로딩된 fromEntity 메서드
-    public static DiaryResponseDto fromEntityForFavorite(Diary diary) {
-        return DiaryResponseDto.builder()
-                .diaryId(diary.getDiaryId())
-                .title(diary.getTitle())
-                .date(diary.getDate())
-                .weather(diary.getWeather())
-                .content(diary.getContent())
-                .mood(diary.getMood())
-                // recommendations 필드는 포함하지 않음
-                .build();
-    }
 }
 

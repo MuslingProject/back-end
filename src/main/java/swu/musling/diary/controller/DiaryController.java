@@ -91,7 +91,7 @@ public class DiaryController {
     public ApiResponse<?> toggleDiaryFavorite(@AuthenticationPrincipal SecurityUser principal,
                                               @PathVariable Long diaryId) {
         diaryService.updateDiaryFavorite(diaryId, principal.getMember());
-        return ApiResponse.createSuccessWithNoData("Diary favorite state updated");
+        return ApiResponse.createSuccessWithNoData("일기 찜 상태 변경 성공");
     }
 
     // 찜한 일기 조회
