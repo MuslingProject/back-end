@@ -262,9 +262,18 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void updateDiaryFavorite(Long diaryId, Member member) {  //일기 찜하기
+    public void updateDiaryFavorite(Long diaryId, Member member) {  //일기 찜하기 변경
         Diary diary = diaryRepository.findByDiaryIdAndMember(diaryId, member);
         diary.toggleFavorite();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiaryResponseDto> getFavoriteDiaries(Member member) {
+        List<Diary> favoriteDiaries = diaryRepository.findAllByMemberAndIsFavoritedIsTrue(member);
+        return favoriteDiaries.stream()
+                .map(DiaryResponseDto::fromEntityForFavorite)
+                .collect(Collectors.toList());
     }
 
     public List<String> getPreferredGenres(Member member) { //사용자 선호 장르

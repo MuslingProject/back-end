@@ -17,5 +17,6 @@ public interface DiaryService {
     EmotionCountResponseDto getEmotionCounts(Member member);    //감정 개수 조회
     List<RecommendationDto> reRecommendSongs(Long diaryId, Member member); //노래 재추천
     void updateDiaryFavorite(Long diaryId, Member member);  //일기 찜하기
+    List<DiaryResponseDto> getFavoriteDiaries(Member member);   //찜한 일기 조회
 }
 
